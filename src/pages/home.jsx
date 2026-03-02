@@ -64,12 +64,11 @@ export default function Home(props) {
     items: ['需要帮助', '想看窗外', '想听音乐', '想看电视', '想翻身']
   }];
   const speakText = text => {
-    if (voiceSettings.voiceEnabled) {
-      speak(text, {
-        rate: voiceSettings.voiceSpeed,
-        lang: voiceSettings.voiceLanguage
-      });
-    }
+    speak(text, {
+      rate: voiceSettings.voiceSpeed,
+      lang: voiceSettings.voiceLanguage,
+      enabled: voiceSettings.voiceEnabled
+    });
   };
   const handleEmergency = () => {
     toast({

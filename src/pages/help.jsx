@@ -43,12 +43,11 @@ export default function Help(props) {
   }]);
   const speakAndCall = (text, phone) => {
     // 先语音播报
-    if (voiceSettings.voiceEnabled) {
-      speak(text, {
-        rate: voiceSettings.voiceSpeed,
-        lang: voiceSettings.voiceLanguage
-      });
-    }
+    speak(text, {
+      rate: voiceSettings.voiceSpeed,
+      lang: voiceSettings.voiceLanguage,
+      enabled: voiceSettings.voiceEnabled
+    });
     toast({
       title: '正在呼叫',
       description: `${text} - ${phone || '未设置'}`
@@ -66,12 +65,11 @@ export default function Help(props) {
     }
   };
   const handleQuickHelp = message => {
-    if (voiceSettings.voiceEnabled) {
-      speak(message, {
-        rate: voiceSettings.voiceSpeed,
-        lang: voiceSettings.voiceLanguage
-      });
-    }
+    speak(message, {
+      rate: voiceSettings.voiceSpeed,
+      lang: voiceSettings.voiceLanguage,
+      enabled: voiceSettings.voiceEnabled
+    });
     toast({
       title: '求助信息已发送',
       description: message

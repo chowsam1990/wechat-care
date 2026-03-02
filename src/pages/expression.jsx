@@ -153,12 +153,11 @@ export default function Expression(props) {
     setCurrentCategory(category || categories[0]);
   }, [categoryParam]);
   const speakText = text => {
-    if (voiceSettings.voiceEnabled) {
-      speak(text, {
-        rate: voiceSettings.voiceSpeed,
-        lang: voiceSettings.voiceLanguage
-      });
-    }
+    speak(text, {
+      rate: voiceSettings.voiceSpeed,
+      lang: voiceSettings.voiceLanguage,
+      enabled: voiceSettings.voiceEnabled
+    });
   };
   if (!currentCategory) {
     return <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center">

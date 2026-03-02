@@ -1,11 +1,12 @@
 // @ts-ignore;
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 // @ts-ignore;
 import { useToast } from '@/components/ui';
 // @ts-ignore;
 import { Home, Volume2, Phone as PhoneIcon, Settings as SettingsIcon, VolumeUp, VolumeX, User, Plus, Trash2 } from 'lucide-react';
 
 import { useSpeech, SpeechIndicator } from '@/components/SpeechHelper';
+import { LanguageSelector } from '@/components/LanguageSelector';
 export default function SettingsPage(props) {
   const {
     toast
@@ -15,11 +16,31 @@ export default function SettingsPage(props) {
     isSupported,
     speak
   } = useSpeech();
-  const [settings, setSettings] = useState({
-    voiceEnabled: true,
-    voiceSpeed: 0.8,
-    fontSize: 'large'
-  });
+
+  // 从 localStorage 加载设置
+  const loadSettings = () => {
+    const saved = localStorage.getItem('speechSettings');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    return {
+      voiceEnabled: true,
+      voiceSpeed: 0.8,
+      voiceLanguage: 'zh-CN',
+      fontSize: 'large'
+    };
+  };
+  const [settings, setSettings] = useState(loadSettings);
+
+  // 保存设置到 localStorage
+  const saveSettings = newSettings => {
+    localStorage.setItem('speechSettings', JSON.stringify(newSettings));
+  };
+
+  // 当设置变化时自动保存
+  useEffect(() => {
+    saveSettings(settings);
+  }, [settings]);
   const [contacts, setContacts] = useState([{
     id: 1,
     name: '医生',
@@ -56,12 +77,20 @@ export default function SettingsPage(props) {
     }
     speak('您好，这是测试语音', {
       rate: settings.voiceSpeed,
-      lang: 'zh-CN'
+      lang: settings.voiceLanguage
     });
     toast({
       title: '语音测试',
-      description: '正在播放测试语音...'
+      description: `正在播放测试语音 (${getLanguageLabel(settings.voiceLanguage)})...`
     });
+  };
+  const getLanguageLabel = lang => {
+    const labels = {
+      'zh-CN': '普通话',
+      'zh-HK': '广东话',
+      'zh-Hant-CN': '客家话'
+    };
+    return labels[lang] || '普通话';
   };
   const addContact = () => {
     if (!newContact.name.trim()) {
@@ -90,6 +119,16 @@ export default function SettingsPage(props) {
     setContacts(contacts.filter(c => c.id !== id));
     toast({
       title: '删除成功'
+    });
+  };
+  const handleLanguageChange = newLanguage => {
+    setSettings({
+      ...settings,
+      voiceLanguage: newLanguage
+    });
+    toast({
+      title: '语言已切换',
+      description: `已切换为 ${getLanguageLabel(newLanguage)}`
     });
   };
   return <div className="min-h-screen bg-[#F5F5F5]">
@@ -128,6 +167,9 @@ export default function SettingsPage(props) {
               <div className={`w-8 h-8 bg-white rounded-full shadow transition-all ${settings.voiceEnabled ? 'translate-x-12' : 'translate-x-2'}`} />
             </button>
           </div>
+
+          {/* 语音语言 */}
+          <LanguageSelector selectedLanguage={settings.voiceLanguage} onChange={handleLanguageChange} />
 
           {/* 语音速度 */}
           <div className="py-4">

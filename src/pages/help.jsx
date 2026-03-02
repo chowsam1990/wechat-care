@@ -1,5 +1,5 @@
 // @ts-ignore;
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 // @ts-ignore;
 import { useToast } from '@/components/ui';
 // @ts-ignore;
@@ -15,6 +15,19 @@ export default function Help(props) {
     isSupported,
     speak
   } = useSpeech();
+
+  // 从 localStorage 加载语音设置
+  const [voiceSettings, setVoiceSettings] = useState({
+    voiceEnabled: true,
+    voiceSpeed: 0.8,
+    voiceLanguage: 'zh-CN'
+  });
+  useEffect(() => {
+    const saved = localStorage.getItem('speechSettings');
+    if (saved) {
+      setVoiceSettings(JSON.parse(saved));
+    }
+  }, []);
   const [emergencyContacts, setEmergencyContacts] = useState([{
     id: 1,
     name: '医生',
@@ -30,10 +43,12 @@ export default function Help(props) {
   }]);
   const speakAndCall = (text, phone) => {
     // 先语音播报
-    speak(text, {
-      rate: 0.8,
-      lang: 'zh-CN'
-    });
+    if (voiceSettings.voiceEnabled) {
+      speak(text, {
+        rate: voiceSettings.voiceSpeed,
+        lang: voiceSettings.voiceLanguage
+      });
+    }
     toast({
       title: '正在呼叫',
       description: `${text} - ${phone || '未设置'}`
@@ -51,10 +66,12 @@ export default function Help(props) {
     }
   };
   const handleQuickHelp = message => {
-    speak(message, {
-      rate: 0.8,
-      lang: 'zh-CN'
-    });
+    if (voiceSettings.voiceEnabled) {
+      speak(message, {
+        rate: voiceSettings.voiceSpeed,
+        lang: voiceSettings.voiceLanguage
+      });
+    }
     toast({
       title: '求助信息已发送',
       description: message

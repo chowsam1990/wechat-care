@@ -7,64 +7,79 @@ import { useToast } from '@/components/ui';
  * 语音播放辅助工具
  * 处理浏览器兼容性并提供友好的错误提示
  */
-// 语音语言选项
-export const VOICE_LANGUAGES = {
-  mandarin: {
-    code: 'zh-CN',
-    name: '普通话',
-    description: '中国大陆标准普通话'
-  },
-  cantonese: {
-    code: 'zh-HK',
-    name: '广东话',
-    description: '粤语（香港）'
-  },
-  hakka: {
-    code: 'hak-CN',
-    name: '客家话',
-    description: '客家话（需要语音包支持）'
-  }
-};
 export const useSpeech = () => {
   const {
     toast
   } = useToast();
   const [isSupported, setIsSupported] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('mandarin');
+  const [availableVoices, setAvailableVoices] = useState([]);
   useEffect(() => {
     // 检测浏览器是否支持语音合成
     const supported = 'speechSynthesis' in window;
     setIsSupported(supported);
     if (!supported) {
       console.warn('浏览器不支持语音播放功能');
+      return;
     }
 
-    // 从 localStorage 加载语言设置
-    const savedLanguage = localStorage.getItem('voice_language') || 'mandarin';
-    setSelectedLanguage(savedLanguage);
+    // 加载语音列表
+    const loadVoices = () => {
+      const voices = window.speechSynthesis.getVoices();
+      console.log('可用语音列表:', voices.map(v => `${v.name} (${v.lang})`));
+      setAvailableVoices(voices);
+    };
+    loadVoices();
+
+    // 语音列表是异步加载的，需要监听事件
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+    return () => {
+      window.speechSynthesis.onvoiceschanged = null;
+    };
   }, []);
 
-  // 获取当前语言代码
-  const getCurrentLangCode = () => {
-    return VOICE_LANGUAGES[selectedLanguage]?.code || 'zh-CN';
-  };
+  /**
+   * 根据语言代码找到最合适的语音
+   * @param {string} lang - 语言代码
+   * @returns {SpeechSynthesisVoice|null}
+   */
+  const findBestVoice = lang => {
+    if (!availableVoices || availableVoices.length === 0) {
+      return null;
+    }
 
-  // 切换语言
-  const setLanguage = languageKey => {
-    if (VOICE_LANGUAGES[languageKey]) {
-      setSelectedLanguage(languageKey);
-      localStorage.setItem('voice_language', languageKey);
+    // 优先精确匹配
+    let voice = availableVoices.find(v => v.lang === lang);
+    if (voice) return voice;
 
-      // 尝试加载该语言的语音
-      if (isSupported) {
-        window.speechSynthesis.getVoices().forEach(voice => {
-          if (voice.lang.includes(VOICE_LANGUAGES[languageKey].code)) {
-            console.log(`已选择语音: ${voice.name}`);
-          }
-        });
+    // 如果没找到，尝试模糊匹配语言前缀
+    const langPrefix = lang.split('-')[0];
+    voice = availableVoices.find(v => v.lang.startsWith(langPrefix));
+    if (voice) return voice;
+
+    // 客家话特殊处理（很多浏览器不支持，尝试使用繁体中文）
+    if (lang === 'zh-Hant-CN') {
+      voice = availableVoices.find(v => v.lang.includes('zh-TW') || v.lang.includes('zh-HK') || v.lang.includes('zh-Hant'));
+      if (voice) {
+        console.warn('客家话不支持，使用替代语音:', voice.name);
+        return voice;
       }
     }
+
+    // 广东话特殊处理
+    if (lang === 'zh-HK') {
+      voice = availableVoices.find(v => v.lang === 'zh-HK' || v.lang.includes('Cantonese'));
+      if (voice) return voice;
+
+      // 没找到广东话，使用繁体中文
+      voice = availableVoices.find(v => v.lang.includes('zh-TW') || v.lang.includes('zh-Hant'));
+      if (voice) {
+        console.warn('广东话不支持，使用繁体中文替代:', voice.name);
+        return voice;
+      }
+    }
+    console.warn('未找到匹配的语音:', lang, '，使用默认语音');
+    return null;
   };
 
   /**
@@ -72,14 +87,13 @@ export const useSpeech = () => {
    * @param {string} text - 要播放的文本
    * @param {object} options - 配置选项
    * @param {number} options.rate - 语速 (默认 0.8)
-   * @param {string} options.lang - 语言 (不指定则使用当前设置)
+  * @param {string} options.lang - 语言 (默认 'zh-CN')
    */
   const speak = (text, options = {}) => {
     const {
       rate = 0.8,
-      lang
+      lang = 'zh-CN'
     } = options;
-    const actualLang = lang || getCurrentLangCode();
 
     // 如果不支持语音，使用振动和文字提示
     if (!isSupported) {
@@ -104,6 +118,15 @@ export const useSpeech = () => {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = lang;
       utterance.rate = rate;
+
+      // 查找并设置合适的语音
+      const voice = findBestVoice(lang);
+      if (voice) {
+        utterance.voice = voice;
+        console.log('使用语音:', voice.name, '(', voice.lang, ')');
+      } else {
+        console.log('使用默认语音，语言:', lang);
+      }
       utterance.onstart = () => {
         setIsSpeaking(true);
       };
@@ -155,11 +178,7 @@ export const useSpeech = () => {
     isSupported,
     isSpeaking,
     speak,
-    stop,
-    selectedLanguage,
-    setLanguage,
-    getCurrentLangCode,
-    VOICE_LANGUAGES
+    stop
   };
 };
 

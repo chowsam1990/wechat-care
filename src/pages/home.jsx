@@ -1,5 +1,5 @@
 // @ts-ignore;
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 // @ts-ignore;
 import { useToast, useNavigate } from '@/components/ui';
 // @ts-ignore;
@@ -23,9 +23,21 @@ export default function Home(props) {
   const navigateTo = props.$w.utils.navigateTo;
   const {
     isSupported,
-    speak,
-    getCurrentLangCode
+    speak
   } = useSpeech();
+
+  // 从 localStorage 加载语音设置
+  const [voiceSettings, setVoiceSettings] = useState({
+    voiceEnabled: true,
+    voiceSpeed: 0.8,
+    voiceLanguage: 'zh-CN'
+  });
+  useEffect(() => {
+    const saved = localStorage.getItem('speechSettings');
+    if (saved) {
+      setVoiceSettings(JSON.parse(saved));
+    }
+  }, []);
   const categories = [{
     id: 'basic',
     name: '基本需求',
@@ -52,10 +64,12 @@ export default function Home(props) {
     items: ['需要帮助', '想看窗外', '想听音乐', '想看电视', '想翻身']
   }];
   const speakText = text => {
-    speak(text, {
-      rate: 0.8,
-      lang: getCurrentLangCode()
-    });
+    if (voiceSettings.voiceEnabled) {
+      speak(text, {
+        rate: voiceSettings.voiceSpeed,
+        lang: voiceSettings.voiceLanguage
+      });
+    }
   };
   const handleEmergency = () => {
     toast({

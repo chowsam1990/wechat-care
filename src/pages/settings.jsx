@@ -1,12 +1,11 @@
 // @ts-ignore;
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 // @ts-ignore;
 import { useToast } from '@/components/ui';
 // @ts-ignore;
 import { Home, Volume2, Phone as PhoneIcon, Settings as SettingsIcon, VolumeUp, VolumeX, User, Plus, Trash2 } from 'lucide-react';
 
-import { useSpeech, SpeechIndicator } from '@/components/SpeechHelper';
-import { LanguageSelector } from '@/components/LanguageSelector';
+import { useSpeech, SpeechIndicator, VOICE_LANGUAGES } from '@/components/SpeechHelper';
 export default function SettingsPage(props) {
   const {
     toast
@@ -14,33 +13,15 @@ export default function SettingsPage(props) {
   const navigateTo = props.$w.utils.navigateTo;
   const {
     isSupported,
-    speak
+    speak,
+    selectedLanguage,
+    setLanguage
   } = useSpeech();
-
-  // 从 localStorage 加载设置
-  const loadSettings = () => {
-    const saved = localStorage.getItem('speechSettings');
-    if (saved) {
-      return JSON.parse(saved);
-    }
-    return {
-      voiceEnabled: true,
-      voiceSpeed: 0.8,
-      voiceLanguage: 'zh-CN',
-      fontSize: 'large'
-    };
-  };
-  const [settings, setSettings] = useState(loadSettings);
-
-  // 保存设置到 localStorage
-  const saveSettings = newSettings => {
-    localStorage.setItem('speechSettings', JSON.stringify(newSettings));
-  };
-
-  // 当设置变化时自动保存
-  useEffect(() => {
-    saveSettings(settings);
-  }, [settings]);
+  const [settings, setSettings] = useState({
+    voiceEnabled: true,
+    voiceSpeed: 0.8,
+    fontSize: 'large'
+  });
   const [contacts, setContacts] = useState([{
     id: 1,
     name: '医生',
@@ -75,22 +56,23 @@ export default function SettingsPage(props) {
       });
       return;
     }
+    const currentLang = VOICE_LANGUAGES[selectedLanguage];
     speak('您好，这是测试语音', {
       rate: settings.voiceSpeed,
-      lang: settings.voiceLanguage
+      lang: currentLang.code
     });
     toast({
       title: '语音测试',
-      description: `正在播放测试语音 (${getLanguageLabel(settings.voiceLanguage)})...`
+      description: `正在用${currentLang.name}播放测试语音...`
     });
   };
-  const getLanguageLabel = lang => {
-    const labels = {
-      'zh-CN': '普通话',
-      'zh-HK': '广东话',
-      'zh-Hant-CN': '客家话'
-    };
-    return labels[lang] || '普通话';
+  const handleLanguageChange = langKey => {
+    setLanguage(langKey);
+    const langInfo = VOICE_LANGUAGES[langKey];
+    toast({
+      title: '语言切换',
+      description: `已切换到${langInfo.name}`
+    });
   };
   const addContact = () => {
     if (!newContact.name.trim()) {
@@ -119,16 +101,6 @@ export default function SettingsPage(props) {
     setContacts(contacts.filter(c => c.id !== id));
     toast({
       title: '删除成功'
-    });
-  };
-  const handleLanguageChange = newLanguage => {
-    setSettings({
-      ...settings,
-      voiceLanguage: newLanguage
-    });
-    toast({
-      title: '语言已切换',
-      description: `已切换为 ${getLanguageLabel(newLanguage)}`
     });
   };
   return <div className="min-h-screen bg-[#F5F5F5]">
@@ -168,9 +140,6 @@ export default function SettingsPage(props) {
             </button>
           </div>
 
-          {/* 语音语言 */}
-          <LanguageSelector selectedLanguage={settings.voiceLanguage} onChange={handleLanguageChange} />
-
           {/* 语音速度 */}
           <div className="py-4">
             <div className="flex items-center justify-between mb-4">
@@ -183,6 +152,31 @@ export default function SettingsPage(props) {
               voiceSpeed: speed
             })} className={`flex-1 py-3 rounded-xl text-lg font-semibold transition-all ${settings.voiceSpeed === speed ? 'bg-[#2E7D32] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
                   {speed}x
+                </button>)}
+            </div>
+          </div>
+
+          {/* 语言选择 */}
+          <div className="py-4 border-t border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-lg font-semibold text-[#333333]">语音语言</span>
+            </div>
+            <div className="grid grid-cols-1 gap-3">
+              {Object.entries(VOICE_LANGUAGES).map(([key, lang]) => <button key={key} onClick={() => handleLanguageChange(key)} className={`p-4 rounded-xl text-left transition-all ${selectedLanguage === key ? 'bg-[#2E7D32] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Volume2 size={24} />
+                      <div>
+                        <div className="text-lg font-semibold">{lang.name}</div>
+                        <div className={`text-sm ${selectedLanguage === key ? 'text-white/80' : 'text-gray-500'}`}>
+                          {lang.description}
+                        </div>
+                      </div>
+                    </div>
+                    {selectedLanguage === key && <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
+                        <div className="w-4 h-4 bg-[#2E7D32] rounded-full" />
+                      </div>}
+                  </div>
                 </button>)}
             </div>
           </div>

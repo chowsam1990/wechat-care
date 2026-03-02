@@ -7,12 +7,31 @@ import { useToast } from '@/components/ui';
  * 语音播放辅助工具
  * 处理浏览器兼容性并提供友好的错误提示
  */
+// 语音语言选项
+export const VOICE_LANGUAGES = {
+  mandarin: {
+    code: 'zh-CN',
+    name: '普通话',
+    description: '中国大陆标准普通话'
+  },
+  cantonese: {
+    code: 'zh-HK',
+    name: '广东话',
+    description: '粤语（香港）'
+  },
+  hakka: {
+    code: 'hak-CN',
+    name: '客家话',
+    description: '客家话（需要语音包支持）'
+  }
+};
 export const useSpeech = () => {
   const {
     toast
   } = useToast();
   const [isSupported, setIsSupported] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('mandarin');
   useEffect(() => {
     // 检测浏览器是否支持语音合成
     const supported = 'speechSynthesis' in window;
@@ -20,20 +39,47 @@ export const useSpeech = () => {
     if (!supported) {
       console.warn('浏览器不支持语音播放功能');
     }
+
+    // 从 localStorage 加载语言设置
+    const savedLanguage = localStorage.getItem('voice_language') || 'mandarin';
+    setSelectedLanguage(savedLanguage);
   }, []);
+
+  // 获取当前语言代码
+  const getCurrentLangCode = () => {
+    return VOICE_LANGUAGES[selectedLanguage]?.code || 'zh-CN';
+  };
+
+  // 切换语言
+  const setLanguage = languageKey => {
+    if (VOICE_LANGUAGES[languageKey]) {
+      setSelectedLanguage(languageKey);
+      localStorage.setItem('voice_language', languageKey);
+
+      // 尝试加载该语言的语音
+      if (isSupported) {
+        window.speechSynthesis.getVoices().forEach(voice => {
+          if (voice.lang.includes(VOICE_LANGUAGES[languageKey].code)) {
+            console.log(`已选择语音: ${voice.name}`);
+          }
+        });
+      }
+    }
+  };
 
   /**
    * 播放语音
    * @param {string} text - 要播放的文本
    * @param {object} options - 配置选项
    * @param {number} options.rate - 语速 (默认 0.8)
-  * @param {string} options.lang - 语言 (默认 'zh-CN')
+   * @param {string} options.lang - 语言 (不指定则使用当前设置)
    */
   const speak = (text, options = {}) => {
     const {
       rate = 0.8,
-      lang = 'zh-CN'
+      lang
     } = options;
+    const actualLang = lang || getCurrentLangCode();
 
     // 如果不支持语音，使用振动和文字提示
     if (!isSupported) {
@@ -109,7 +155,11 @@ export const useSpeech = () => {
     isSupported,
     isSpeaking,
     speak,
-    stop
+    stop,
+    selectedLanguage,
+    setLanguage,
+    getCurrentLangCode,
+    VOICE_LANGUAGES
   };
 };
 

@@ -15,21 +15,9 @@ export default function Expression(props) {
   const navigateBack = props.$w.utils.navigateBack;
   const {
     isSupported,
-    speak
+    speak,
+    getCurrentLangCode
   } = useSpeech();
-
-  // 从 localStorage 加载语音设置
-  const [voiceSettings, setVoiceSettings] = useState({
-    voiceEnabled: true,
-    voiceSpeed: 0.8,
-    voiceLanguage: 'zh-CN'
-  });
-  useEffect(() => {
-    const saved = localStorage.getItem('speechSettings');
-    if (saved) {
-      setVoiceSettings(JSON.parse(saved));
-    }
-  }, []);
   const [currentCategory, setCurrentCategory] = useState(null);
   const categories = [{
     id: 'basic',
@@ -153,12 +141,10 @@ export default function Expression(props) {
     setCurrentCategory(category || categories[0]);
   }, [categoryParam]);
   const speakText = text => {
-    if (voiceSettings.voiceEnabled) {
-      speak(text, {
-        rate: voiceSettings.voiceSpeed,
-        lang: voiceSettings.voiceLanguage
-      });
-    }
+    speak(text, {
+      rate: 0.8,
+      lang: getCurrentLangCode()
+    });
   };
   if (!currentCategory) {
     return <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center">

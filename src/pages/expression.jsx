@@ -33,118 +33,118 @@ export default function Expression(props) {
   const [currentCategory, setCurrentCategory] = useState(null);
   const categories = [{
     id: 'basic',
-    name: '基本需求',
+    name: '吃喝拉撒',
     color: 'bg-green-500',
     items: [{
-      text: '我渴了',
+      text: '口渴想喝水',
       icon: '💧'
     }, {
-      text: '我饿了',
+      text: '肚子饿了',
       icon: '🍚'
     }, {
-      text: '想上厕所',
+      text: '要上厕所',
       icon: '🚻'
     }, {
-      text: '我要休息',
+      text: '想歇会',
       icon: '😴'
     }, {
-      text: '我想睡觉',
+      text: '要睡觉',
       icon: '🛏️'
     }, {
-      text: '想喝热水',
+      text: '喝点热水',
       icon: '🫖'
     }, {
-      text: '想吃饭',
+      text: '吃顿饭',
       icon: '🥣'
     }, {
-      text: '想吃药',
+      text: '吃药',
       icon: '💊'
     }]
   }, {
     id: 'feelings',
-    name: '情感表达',
+    name: '心里话',
     color: 'bg-red-500',
     items: [{
-      text: '我开心',
+      text: '很开心',
       icon: '😊'
     }, {
-      text: '我很难过',
+      text: '心里难受',
       icon: '😢'
     }, {
-      text: '我很痛苦',
+      text: '身上疼',
       icon: '😫'
     }, {
-      text: '我害怕',
+      text: '有点怕',
       icon: '😨'
     }, {
-      text: '我生气了',
+      text: '很生气',
       icon: '😠'
     }, {
-      text: '我很担心',
+      text: '心里担心',
       icon: '😟'
     }, {
-      text: '我累了',
+      text: '累得很',
       icon: '😩'
     }, {
-      text: '我很舒服',
+      text: '很舒服',
       icon: '😌'
     }]
   }, {
     id: 'communication',
-    name: '交流求助',
+    name: '找人说说话',
     color: 'bg-blue-500',
     items: [{
-      text: '我想说话',
+      text: '想说说话',
       icon: '🗣️'
     }, {
-      text: '我想写字',
+      text: '想写字',
       icon: '✍️'
     }, {
-      text: '紧急求助',
+      text: '急！帮帮我',
       icon: '🆘'
     }, {
-      text: '联系医生',
+      text: '找医生',
       icon: '👨‍⚕️'
     }, {
-      text: '联系家人',
+      text: '找家人',
       icon: '👨‍👩‍👧'
     }, {
-      text: '我想问问题',
+      text: '问个事',
       icon: '❓'
     }, {
-      text: '我需要解释',
+      text: '说说清楚',
       icon: '📝'
     }, {
-      text: '请等等',
+      text: '等一等',
       icon: '⏳'
     }]
   }, {
     id: 'needs',
-    name: '其他需求',
+    name: '想要啥',
     color: 'bg-yellow-500',
     items: [{
-      text: '需要帮助',
+      text: '帮帮忙',
       icon: '🆘'
     }, {
-      text: '想看窗外',
+      text: '看看外面',
       icon: '🪟'
     }, {
-      text: '想听音乐',
+      text: '听个歌',
       icon: '🎵'
     }, {
-      text: '想看电视',
+      text: '看会电视',
       icon: '📺'
     }, {
-      text: '想翻身',
+      text: '翻个身',
       icon: '🔄'
     }, {
-      text: '想散步',
+      text: '走一走',
       icon: '🚶'
     }, {
-      text: '想躺下',
+      text: '躺一下',
       icon: '🛏️'
     }, {
-      text: '想坐起来',
+      text: '坐起来',
       icon: '🪑'
     }]
   }];
@@ -181,7 +181,7 @@ export default function Expression(props) {
         <SpeechIndicator isSupported={isSupported} />
         <div className="grid grid-cols-2 gap-6">
           {currentCategory.items.map((item, index) => <button key={index} onClick={() => speakText(item.text)} className="bg-white hover:shadow-2xl text-[#333333] p-8 rounded-2xl shadow-lg transition-all active:scale-95 flex flex-col items-center gap-4">
-              <span className="text-6xl">{item.icon}</span>
+              <span className="text-8xl">{item.icon}</span>
               <span className="text-2xl font-bold text-center">{item.text}</span>
             </button>)}
         </div>

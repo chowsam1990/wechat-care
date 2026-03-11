@@ -40,28 +40,28 @@ export default function Home(props) {
   }, []);
   const categories = [{
     id: 'basic',
-    name: '基本需求',
-    icon: Utensils,
+    name: '吃喝拉撒',
+    icon: '🍽️',
     color: 'bg-green-500',
-    items: ['我渴了', '我饿了', '想上厕所', '我要休息', '我想睡觉']
+    items: ['口渴想喝水', '肚子饿了', '要上厕所', '想歇会', '要睡觉']
   }, {
     id: 'feelings',
-    name: '情感表达',
-    icon: Heart,
+    name: '心里话',
+    icon: '❤️',
     color: 'bg-red-500',
-    items: ['我开心', '我很难过', '我很痛苦', '我害怕', '我生气了']
+    items: ['很开心', '心里难受', '身上疼', '有点怕', '很生气']
   }, {
     id: 'communication',
-    name: '交流求助',
-    icon: Phone,
+    name: '找人说说话',
+    icon: '📞',
     color: 'bg-blue-500',
-    items: ['我想说话', '我想写字', '紧急求助', '联系医生', '联系家人']
+    items: ['想说说话', '想写字', '急！帮帮我', '找医生', '找家人']
   }, {
     id: 'needs',
-    name: '其他需求',
-    icon: Lightbulb,
+    name: '想要啥',
+    icon: '💡',
     color: 'bg-yellow-500',
-    items: ['需要帮助', '想看窗外', '想听音乐', '想看电视', '想翻身']
+    items: ['需要帮忙', '看看外面', '听个歌', '看会电视', '翻个身']
   }];
   const speakText = text => {
     speak(text, {
@@ -81,8 +81,8 @@ export default function Home(props) {
   return <div className="min-h-screen bg-[#F5F5F5]">
       {/* 顶部标题栏 */}
       <div className="bg-[#2E7D32] text-white p-6 shadow-lg">
-        <h1 className="text-3xl font-bold">辅助表达</h1>
-        <p className="text-lg mt-2 opacity-90">帮助您表达需求</p>
+        <h1 className="text-3xl font-bold">说话助手</h1>
+        <p className="text-lg mt-2 opacity-90">帮您说话</p>
       </div>
 
       {/* 主要内容区 */}
@@ -98,14 +98,13 @@ export default function Home(props) {
         {/* 分类导航 */}
         <div className="grid grid-cols-2 gap-6">
           {categories.map(category => {
-          const Icon = category.icon;
           return <button key={category.id} onClick={() => navigateTo({
             pageId: 'expression',
             params: {
               category: category.id
             }
           })} className={`${category.color} hover:opacity-90 text-white p-8 rounded-2xl shadow-lg transition-all active:scale-95 flex flex-col items-center gap-4`}>
-                <Icon size={48} />
+                <span className="text-7xl">{category.icon}</span>
                 <span className="text-2xl font-bold">{category.name}</span>
               </button>;
         })}
@@ -113,7 +112,7 @@ export default function Home(props) {
 
         {/* 快捷常用语 */}
         <div className="bg-white rounded-2xl p-6 shadow-lg">
-          <h2 className="text-2xl font-bold text-[#333333] mb-4">快捷常用语</h2>
+          <h2 className="text-2xl font-bold text-[#333333] mb-4">最常用的</h2>
           <div className="grid grid-cols-2 gap-4">
             {[{
             text: '我渴了',

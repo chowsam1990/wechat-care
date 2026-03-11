@@ -78,8 +78,8 @@ export default function Help(props) {
   return <div className="min-h-screen bg-[#F5F5F5]">
       {/* 顶部标题栏 */}
       <div className="bg-[#1976D2] text-white p-6 shadow-lg">
-        <h1 className="text-3xl font-bold">紧急求助</h1>
-        <p className="text-lg mt-2 opacity-90">一键呼叫，快速获得帮助</p>
+        <h1 className="text-3xl font-bold">快来帮我</h1>
+        <p className="text-lg mt-2 opacity-90">按一下就能叫人</p>
       </div>
 
       {/* 主要内容区 */}
@@ -89,7 +89,7 @@ export default function Help(props) {
         {/* 紧急求助按钮 */}
         <button onClick={() => handleQuickHelp('🆘 我需要紧急求助！')} className="w-full bg-red-600 hover:bg-red-700 text-white text-3xl font-bold py-10 rounded-2xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-4">
           <Heart size={48} />
-          紧急求助
+          急！快帮忙
         </button>
 
         {/* 快捷求助信息 */}

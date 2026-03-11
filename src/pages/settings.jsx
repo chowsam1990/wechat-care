@@ -95,7 +95,7 @@ export default function SettingsPage(props) {
   const addContact = () => {
     if (!newContact.name.trim()) {
       toast({
-        title: '请输入姓名',
+        title: '填个名字',
         variant: 'destructive'
       });
       return;
@@ -146,14 +146,14 @@ export default function SettingsPage(props) {
         <div className="bg-white rounded-2xl p-6 shadow-lg">
           <div className="flex items-center gap-2 mb-6">
             <VolumeUp size={24} className="text-[#2E7D32]" />
-            <h2 className="text-2xl font-bold text-[#333333]">语音设置</h2>
+            <h2 className="text-2xl font-bold text-[#333333]">说话设置</h2>
           </div>
           
           {/* 语音开关 */}
           <div className="flex items-center justify-between py-4 border-b border-gray-200">
             <div className="flex items-center gap-3">
               {settings.voiceEnabled ? <VolumeUp size={28} className="text-[#2E7D32]" /> : <VolumeX size={28} className="text-gray-400" />}
-              <span className="text-xl font-semibold text-[#333333]">语音播报</span>
+              <span className="text-xl font-semibold text-[#333333]">读出来</span>
             </div>
             <button onClick={() => {
             setSettings({
@@ -174,7 +174,7 @@ export default function SettingsPage(props) {
           {/* 语音速度 */}
           <div className="py-4">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-lg font-semibold text-[#333333]">语音速度</span>
+              <span className="text-lg font-semibold text-[#333333]">说话快慢</span>
               <span className="text-lg text-[#2E7D32]">{settings.voiceSpeed}x</span>
             </div>
             <div className="flex gap-4">
@@ -190,7 +190,7 @@ export default function SettingsPage(props) {
           {/* 测试语音 */}
           <button onClick={testVoice} className="w-full mt-4 bg-[#1976D2] hover:bg-blue-700 text-white text-xl font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2">
             <VolumeUp size={24} />
-            测试语音
+            听一下
           </button>
         </div>
 
@@ -198,23 +198,23 @@ export default function SettingsPage(props) {
         <div className="bg-white rounded-2xl p-6 shadow-lg">
           <div className="flex items-center gap-2 mb-6">
             <PhoneIcon size={24} className="text-[#1976D2]" />
-            <h2 className="text-2xl font-bold text-[#333333]">紧急联系人</h2>
+            <h2 className="text-2xl font-bold text-[#333333]">给谁打电话</h2>
           </div>
 
           {/* 添加联系人表单 */}
           <div className="bg-gray-50 rounded-xl p-4 mb-4">
             <div className="space-y-4">
-              <input type="text" placeholder="姓名" value={newContact.name} onChange={e => setNewContact({
+              <input type="text" placeholder="叫啥名字" value={newContact.name} onChange={e => setNewContact({
               ...newContact,
               name: e.target.value
             })} className="w-full text-lg p-4 border-2 border-gray-300 rounded-xl focus:border-[#2E7D32] focus:outline-none" />
-              <input type="tel" placeholder="电话号码" value={newContact.phone} onChange={e => setNewContact({
+              <input type="tel" placeholder="电话多少" value={newContact.phone} onChange={e => setNewContact({
               ...newContact,
               phone: e.target.value
             })} className="w-full text-lg p-4 border-2 border-gray-300 rounded-xl focus:border-[#2E7D32] focus:outline-none" />
               <button onClick={addContact} className="w-full bg-[#2E7D32] hover:bg-green-700 text-white text-lg font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2">
                 <Plus size={24} />
-                添加联系人
+                加个联系人
               </button>
             </div>
           </div>
@@ -226,7 +226,7 @@ export default function SettingsPage(props) {
                   <User size={32} className="text-[#1976D2]" />
                   <div>
                     <div className="text-xl font-bold text-[#333333]">{contact.name}</div>
-                    <div className="text-lg text-gray-500">{contact.phone || '未设置电话'}</div>
+                    <div className="text-lg text-gray-500">{contact.phone || '没填电话'}</div>
                   </div>
                 </div>
                 <button onClick={() => deleteContact(contact.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all">
@@ -238,10 +238,10 @@ export default function SettingsPage(props) {
 
         {/* 关于 */}
         <div className="bg-white rounded-2xl p-6 shadow-lg">
-          <h2 className="text-2xl font-bold text-[#333333] mb-4">关于</h2>
+          <h2 className="text-2xl font-bold text-[#333333] mb-4">这是什么</h2>
           <div className="space-y-3 text-lg text-gray-600">
-            <p>辅助表达 v1.0</p>
-            <p>为中风病人提供帮助</p>
+            <p>说话助手 v1.0</p>
+            <p>帮您说话</p>
             <p>简单易用，贴心关怀</p>
           </div>
         </div>
